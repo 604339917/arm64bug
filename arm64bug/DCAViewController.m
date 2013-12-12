@@ -8,7 +8,10 @@
 
 #import "DCAViewController.h"
 
-@interface DCAViewController ()
+@interface DCAViewController () {
+    int intVar;
+    float x;
+}
 
 @end
 
@@ -16,8 +19,33 @@
 
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+    
+    UILabel *ll = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+    [self.view addSubview:ll];
+    
+    
+    dispatch_queue_t q1 = dispatch_queue_create("q1", NULL);
+    dispatch_async(q1, ^{
+        while (1) {
+            intVar++;
+            printf("intVar: %d\n",intVar);
+            usleep(100000);
+        }
+    });
+    
+    
+    dispatch_queue_t q2 = dispatch_queue_create("q2", NULL);
+    dispatch_async(q2, ^{
+        while (1) {
+            float f = (float)x;
+            intVar = 0;
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                ll.text = [NSString stringWithFormat:@"%f",f];
+            });
+            usleep(1000000);
+        }
+    });
+    
 }
 
 - (void)didReceiveMemoryWarning
